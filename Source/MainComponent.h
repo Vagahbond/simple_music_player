@@ -1,6 +1,15 @@
 #pragma once
 
 #include <JuceHeader.h>
+// #include "PlayerStateChangeListener.h"
+
+enum TransportState
+{
+    Stopped,
+    Starting,
+    Playing,
+    Stopping
+};
 
 //==============================================================================
 /*
@@ -10,13 +19,6 @@
 class MainComponent : public juce::AudioAppComponent
 {
 public:
-    enum TransportState
-    {
-        Stopped,
-        Starting,
-        Playing,
-        Stopping
-    };
     //==============================================================================
     MainComponent();
     ~MainComponent() override;
@@ -25,6 +27,8 @@ public:
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
     void releaseResources() override;
+
+    void changeState(TransportState newState);
 
     //==============================================================================
     void paint(juce::Graphics &g) override;
@@ -42,10 +46,6 @@ private:
 
     void stop_button_clicked();
 
-    void changeState(TransportState newState);
-
-    void changeListenerCallback(juce::ChangeBroadcaster *source);
-
     // Buttons
     juce::TextButton *play_button;
     juce::TextButton *stop_button;
@@ -55,6 +55,7 @@ private:
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
     TransportState state;
+    // std::unique_ptr<PlayerStateChangeListener> change_listener;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

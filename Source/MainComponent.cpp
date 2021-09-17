@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include "PlayerStateChangeListener.h"
 
 #include "portable-file-dialogs.h"
 
@@ -56,7 +57,9 @@ MainComponent::MainComponent()
     }
 
     formatManager.registerBasicFormats();
-    transportSource.addChangeListener((juce::ChangeListener *)this);
+
+    // this->change_listener = &new PlayerStateChangeListener();
+    transportSource.addChangeListener(new PlayerStateChangeListener(&this->transportSource, this));
 }
 
 MainComponent::~MainComponent()
@@ -123,17 +126,18 @@ void MainComponent::resized()
     // update their positions.
 }
 
-//callback called to stop playing
-void MainComponent::changeListenerCallback(juce::ChangeBroadcaster *source)
-{
-    if (source == &transportSource)
-    {
-        if (transportSource.isPlaying())
-            changeState(Playing);
-        else
-            changeState(Stopped);
-    }
-}
+// //callback called to stop playing
+// void MainComponent::changeListenerCallback(juce::ChangeBroadcaster *source)
+// {
+//     std::cout << "went in callback" << std::endl;
+//     if (source == &transportSource)
+//     {
+//         if (transportSource.isPlaying())
+//             changeState(Playing);
+//         else
+//             changeState(Stopped);
+//     }
+// }
 
 void MainComponent::changeState(TransportState newState)
 {
@@ -181,20 +185,27 @@ void MainComponent::open_button_clicked()
     std::cout << "Selected files:";
     std::cout << f.result()[0] << std::endl;
 
-    // auto file = juce::File(result);
+    if (f.result().size() == 0) {
+        std::cout << "No file was selected" << std::endl;
+        return;
+    }
 
-    // if (file != juce::File{})
-    // {
-    //     auto *reader = formatManager.createReaderFor(file);
+    auto selected_file = f.result()[0];
 
-    //     if (reader != nullptr)
-    //     {
-    //         auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
-    //         transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
-    //         play_button->setEnabled(true);
-    //         readerSource.reset(newSource.release());
-    //     }
-    // }
+    auto file = juce::File(selected_file);
+
+    if (file != juce::File{})
+    {
+        auto *reader = formatManager.createReaderFor(file);
+
+        if (reader != nullptr)
+        {
+            auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+            transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);
+            play_button->setEnabled(true);
+            readerSource.reset(newSource.release());
+        }
+    }
 }
 
 void MainComponent::play_button_clicked()

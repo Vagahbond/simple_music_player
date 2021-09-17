@@ -483,4 +483,5 @@ build/intermediate/Debug/MainComponent_a6ffb4a5.o: \
  /home/vagahbond/JUCE/modules/juce_gui_extra/misc/juce_WebBrowserComponent.h \
  /home/vagahbond/JUCE/modules/juce_gui_extra/misc/juce_LiveConstantEditor.h \
  /home/vagahbond/JUCE/modules/juce_gui_extra/misc/juce_AnimatedAppComponent.h \
+ ../../Source/PlayerStateChangeListener.h \
  ../../Source/portable-file-dialogs.h
